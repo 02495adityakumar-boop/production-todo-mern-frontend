@@ -1,4 +1,5 @@
 import React,{useState} from 'react'
+import axios from 'axios'
 import { Link, useNavigate } from "react-router-dom";
 import './AuthStyle.css'
 import AuthServices from '../../services/Authservices';
@@ -17,11 +18,15 @@ const navigate = useNavigate();
    try {
     e.preventDefault()
     const data = {email,password}
-    const res = await AuthServices.loginuser(data)
-    toast.success(res.data.message)
-    navigate("/home")
-    localStorage.setItem('todoapp', JSON.stringify(res.data))
-    console.log(res.data)
+ const res = await AuthServices.loginuser(data);
+
+toast.success(res.data.message);
+
+localStorage.setItem("todoapp", JSON.stringify(res.data));
+
+axios.defaults.headers.common.Authorization = `Bearer ${res.data.token}`;
+
+navigate("/home");
    } catch (err) {
   toast.error(getErrorMEssage(err));
   console.log(err);
