@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Navbar from '../../components/layout/Navbar'
 import TodoServices from '../../services/TodoServices'
 import Spinner from '../../components/Spinner'
@@ -13,30 +13,34 @@ const TodoList = () => {
   const userData = JSON.parse(localStorage.getItem("todoapp"));
  const id = userData?.user?._id;
   console.log(id);
-  const getUserTask = async () => {
-    setLoading(true);
-    try {
-      const { data } = await TodoServices.getAllTodo(id);
-      setLoading(false);
-      // console.log(data);
-      setAllTask(data?.todos);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
-  };
+  const getUserTask = useCallback(async () => {
+  setLoading(true);
+  try {
+    const { data } = await TodoServices.getAllTodo(id);
+    setAllTask(data?.todos);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    setLoading(false);
+  }
+}, [id]);
+
+useEffect(() => {
+  getUserTask();
+}, [getUserTask]);
 
   useEffect(() => {
-    const incomplete = allTask?.filter((item) => item?.isCompleted === false);
-    const completed = allTask?.filter((item) => item?.isCompleted === true);
-    if (todoStatus === "incomplete") {
-      setFilterdTask(incomplete);
-    } else if (todoStatus === "completed") {
-      setFilterdTask(completed);
-    }
-    getUserTask();
-  }, [todoStatus]);
+  const incomplete = allTask.filter(item => !item.isCompleted);
+  const completed = allTask.filter(item => item.isCompleted);
 
+  if (todoStatus === "incomplete") {
+    setFilterdTask(incomplete);
+  } else if (todoStatus === "completed") {
+    setFilterdTask(completed);
+  } else {
+    setFilterdTask(allTask);
+  }
+}, [todoStatus, allTask]);
    return (
     <>
       <Navbar />

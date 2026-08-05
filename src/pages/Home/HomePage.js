@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from 'react'
+import React, { useEffect, useState, useCallback } from "react";
 import Navbar from '../../components/layout/Navbar'
 import PopModel from '../../components/layout/PopModel'
 import TodoServices from '../../services/TodoServices'
@@ -39,23 +39,21 @@ const HomePage = () => {
   const userData = JSON.parse(localStorage.getItem("todoapp"));
 const id = userData?.user?._id;
   console.log(id);
-  const getUserTask = async () => {
-    setLoading(true);
-    try {
-      const { data } = await TodoServices.getAllTodo(id);
-      setLoading(false);
-      console.log(data);
-      setAllTask(data.todos);
-      setAllTask(data?.todos);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
-  };
+const getUserTask = useCallback(async () => {
+  setLoading(true);
+  try {
+    const { data } = await TodoServices.getAllTodo(id);
+    setLoading(false);
+    setAllTask(data?.todos);
+  } catch (error) {
+    setLoading(false);
+    console.log(error);
+  }
+}, [id]);
 
-  useEffect(() => {
-    getUserTask();
-  }, []);
+useEffect(() => {
+  getUserTask();
+}, [getUserTask]);
   return (
     <>
       <Navbar />
