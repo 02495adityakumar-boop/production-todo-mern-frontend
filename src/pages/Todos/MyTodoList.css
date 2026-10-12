@@ -1,0 +1,292 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* Main Background Shell */
+.todolist-wrapper {
+  min-height: 100vh;
+  background: radial-gradient(circle at 10% 12%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+              radial-gradient(circle at 90% 88%, rgba(139, 92, 246, 0.04) 0%, transparent 40%),
+              #f8fafc;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: #0f172a;
+}
+
+.todolist-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  box-sizing: border-box;
+}
+
+/* Header & Filter Controls */
+.todolist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.header-text h2 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.035em;
+}
+
+.header-text p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Pill Tabs */
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-pills {
+  display: flex;
+  background: #ffffff;
+  padding: 0.3rem;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: transparent;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pill-btn span {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.pill-btn.active {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.pill-btn.active span {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.dropdown-filter {
+  display: none;
+}
+
+.status-select {
+  height: 44px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  outline: none;
+  font-family: inherit;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+}
+
+/* Responsive Grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card Styling */
+.task-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.03);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  transition: background 0.25s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+  border-color: #cbd5e1;
+  box-shadow: 0 16px 24px -6px rgba(15, 23, 42, 0.08);
+}
+
+.task-card:hover::before {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.task-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+  letter-spacing: 0.01em;
+}
+
+.badge-completed {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-incomplete {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.task-date {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+}
+
+.task-card-body {
+  flex: 1;
+}
+
+.task-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.6rem;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.task-desc {
+  font-size: 0.93rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* Spinner Placement */
+.spinner-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6rem 0;
+}
+
+/* Empty State Card */
+.no-task-placeholder {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 5rem 1.5rem;
+  background: #ffffff;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 20px;
+}
+
+.empty-icon-circle {
+  width: 70px;
+  height: 70px;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.85rem;
+  color: #6366f1;
+  margin-bottom: 1.25rem;
+}
+
+.no-task-placeholder h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+  color: #1e293b;
+}
+
+.no-task-placeholder p {
+  color: #64748b;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .todolist-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-controls {
+    width: 100%;
+  }
+
+  .filter-pills {
+    display: none;
+  }
+
+  .dropdown-filter {
+    display: block;
+    width: 100%;
+  }
+
+  .status-select {
+    width: 100%;
+  }
+}

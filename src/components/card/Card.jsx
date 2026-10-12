@@ -1,7 +1,8 @@
-import React, { useState, Fragment } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import TodoServices from "../../services/TodoServices";
 import EditTodo from "../EditTodo";
+import "./Card.css";
 
 const Card = ({ allTask, getUserTask }) => {
   const [showModal, setShowModal] = useState(false);
@@ -27,55 +28,87 @@ const Card = ({ allTask, getUserTask }) => {
 
   return (
     <>
-      <div className="card-container">
-        {allTask?.map((task) => (
-          <Fragment key={task._id}>
+      <div className="task-card-container">
+        {allTask?.map((task) => {
+          const formattedDate = task?.createdAt
+            ? new Date(task.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "Recently";
+
+          return (
             <div
-              className="card border-primary mb-3 mt-3"
-              style={{ maxWidth: "18rem" }}
+              className={`modern-task-card ${
+                task?.isCompleted ? "card-completed" : "card-pending"
+              }`}
+              key={task._id}
             >
-              <div className="card-header">
-                <div className="chead">
-                  <h6>{task?.title.substring(0, 10)}</h6>
-                  <h6
-                    className={
-                      task?.isCompleted ? "task-cmp" : "task-inc"
-                    }
-                  >
-                    {task?.isCompleted ? "Completed" : "Incomplete"}
-                  </h6>
-                </div>
+              {/* Header: Status Chip & Created Date */}
+              <div className="card-top-section">
+                <span
+                  className={`task-status-pill ${
+                    task?.isCompleted ? "status-done" : "status-active"
+                  }`}
+                >
+                  <i
+                    className={`fa-solid ${
+                      task?.isCompleted ? "fa-circle-check" : "fa-clock"
+                    }`}
+                  ></i>
+                  {task?.isCompleted ? "Completed" : "Incomplete"}
+                </span>
+
+                <span className="task-date-text">
+                  <i className="fa-regular fa-calendar"></i>
+                  {formattedDate}
+                </span>
               </div>
 
-              <div className="card-body">
-                <h6 style={{ fontWeight: "bold" }}>{task?.title}</h6>
-                <p className="card-text">{task?.description}</p>
-                <h6>Date : {task?.createdAt.substring(0, 10)}</h6>
+              {/* Body: Title and Description */}
+              <div className="card-body-section">
+                <h4
+                  className={`task-main-title ${
+                    task?.isCompleted ? "completed-title" : ""
+                  }`}
+                  title={task?.title}
+                >
+                  {task?.title}
+                </h4>
+                <p className="task-description-text">
+                  {task?.description || "No description provided."}
+                </p>
               </div>
 
-              <div className="card-footer bg-transparent border-primary">
+              {/* Footer: Action Controls */}
+              <div className="card-action-bar">
                 <button
-                  className="btn btn-warning"
+                  type="button"
+                  className="card-btn edit-action-btn"
                   title="Edit Task"
                   onClick={() => handleEdit(task)}
                 >
                   <i className="fa-solid fa-pen-to-square"></i>
+                  <span>Edit</span>
                 </button>
 
                 <button
-                  className="btn btn-danger ms-2"
+                  type="button"
+                  className="card-btn delete-action-btn"
                   title="Delete Task"
                   onClick={() => handleDelete(task._id)}
                 >
                   <i className="fa-solid fa-trash"></i>
+                  <span>Delete</span>
                 </button>
               </div>
             </div>
-          </Fragment>
-        ))}
+          );
+        })}
       </div>
 
-      {/* Render only one Edit Modal */}
+      {/* Render Edit Modal */}
       {showModal && selectedTask && (
         <EditTodo
           task={selectedTask}

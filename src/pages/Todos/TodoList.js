@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import Navbar from '../../components/layout/Navbar'
 import TodoServices from '../../services/TodoServices'
 import Spinner from '../../components/Spinner'
-
+import './MyTodoList.css'
 
 const TodoList = () => {
   const [todoStatus, setTodosStatus] = useState("all");
