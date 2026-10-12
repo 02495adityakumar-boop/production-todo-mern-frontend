@@ -3,97 +3,166 @@ import Navbar from '../../components/layout/Navbar'
 import TodoServices from '../../services/TodoServices'
 import Spinner from '../../components/Spinner'
 
+
 const TodoList = () => {
-  const [todoStatus, setTodosStatus] = useState("");
+  const [todoStatus, setTodosStatus] = useState("all");
   const [filterdTask, setFilterdTask] = useState([]);
   const [loading, setLoading] = useState(false);
   const [allTask, setAllTask] = useState([]);
 
-  //get User todos
+  // Get user info from localStorage
   const userData = JSON.parse(localStorage.getItem("todoapp"));
- const id = userData?.user?._id;
-  console.log(id);
-  const getUserTask = useCallback(async () => {
-  setLoading(true);
-  try {
-    const { data } = await TodoServices.getAllTodo(id);
-    setAllTask(data?.todos);
-  } catch (error) {
-    console.log(error);
-  } finally {
-    setLoading(false);
-  }
-}, [id]);
+  const id = userData?.user?._id;
 
-useEffect(() => {
-  getUserTask();
-}, [getUserTask]);
+  const getUserTask = useCallback(async () => {
+    setLoading(true);
+    try {
+      const { data } = await TodoServices.getAllTodo(id);
+      setAllTask(data?.todos || []);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
-  const incomplete = allTask.filter(item => !item.isCompleted);
-  const completed = allTask.filter(item => item.isCompleted);
+    getUserTask();
+  }, [getUserTask]);
 
-  if (todoStatus === "incomplete") {
-    setFilterdTask(incomplete);
-  } else if (todoStatus === "completed") {
-    setFilterdTask(completed);
-  } else {
-    setFilterdTask(allTask);
-  }
-}, [todoStatus, allTask]);
-   return (
-    <>
+  useEffect(() => {
+    const incomplete = allTask?.filter(item => !item?.isCompleted) || [];
+    const completed = allTask?.filter(item => item?.isCompleted) || [];
+
+    if (todoStatus === "incomplete") {
+      setFilterdTask(incomplete);
+    } else if (todoStatus === "completed") {
+      setFilterdTask(completed);
+    } else {
+      setFilterdTask(allTask);
+    }
+  }, [todoStatus, allTask]);
+
+  const completedCount = allTask?.filter(t => t?.isCompleted)?.length || 0;
+  const pendingCount = (allTask?.length || 0) - completedCount;
+
+  return (
+    <div className="todolist-wrapper">
       <Navbar />
-      <div className="filter-container">
-        <h4>Filter Todos by </h4>
-        <div className="filter-group">
-          <select
-            className="form-select"
-            onChange={(e) => setTodosStatus(e.target.value)}
-          >
-            <option selected>Select Status</option>
-            <option value="incomplete">Incomplete</option>
-            <option value="completed">completed</option>
-          </select>
-        </div>
-      </div>
-      {/* ================= */}
-      {loading && <Spinner />}
-      <div className="card-container">
-        {filterdTask?.length === 0 ? (
-          <h1 className="no-task"> No task Found</h1>
-        ) : (
-          filterdTask.map((task) => (
-            <>
-              <div
-                className="card border-primary mb-3 mt-3"
-                style={{ maxWidth: "18rem" }}
-                key={task._id} 
+
+      <main className="container todolist-container">
+        {/* Header and Filter Section */}
+        <section className="todolist-header">
+          <div className="header-text">
+            <h2>Task Archive & Overview</h2>
+            <p>Filter, review, and organize your complete task backlog</p>
+          </div>
+
+          <div className="filter-controls">
+            {/* Quick Filter Pill Buttons */}
+            <div className="filter-pills">
+              <button
+                type="button"
+                className={`pill-btn ${todoStatus === "all" ? "active" : ""}`}
+                onClick={() => setTodosStatus("all")}
               >
-                <div className="card-header">
-                  <div className="chead">
-                    <h6>{task?.title.substring(0, 10)}</h6>
-                    <h6
-                      className={
-                        task?.isCompleted === true ? "task-cmp " : "task-inc"
-                      }
-                    >
-                      {task?.isCompleted === true ? "Completed " : "incomlete"}
-                    </h6>
-                  </div>
+                All <span>{allTask?.length || 0}</span>
+              </button>
+              <button
+                type="button"
+                className={`pill-btn ${todoStatus === "incomplete" ? "active" : ""}`}
+                onClick={() => setTodosStatus("incomplete")}
+              >
+                Incomplete <span>{pendingCount}</span>
+              </button>
+              <button
+                type="button"
+                className={`pill-btn ${todoStatus === "completed" ? "active" : ""}`}
+                onClick={() => setTodosStatus("completed")}
+              >
+                Completed <span>{completedCount}</span>
+              </button>
+            </div>
+
+            {/* Dropdown Alternative */}
+            <div className="dropdown-filter">
+              <select
+                className="status-select"
+                value={todoStatus}
+                onChange={(e) => setTodosStatus(e.target.value)}
+              >
+                <option value="all">Filter: All Tasks</option>
+                <option value="incomplete">Filter: Incomplete</option>
+                <option value="completed">Filter: Completed</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        {/* Task Cards or Spinner */}
+        {loading ? (
+          <div className="spinner-center">
+            <Spinner />
+          </div>
+        ) : (
+          <div className="cards-grid">
+            {filterdTask?.length === 0 ? (
+              <div className="no-task-placeholder">
+                <div className="empty-icon-circle">
+                  <i className="fa-solid fa-list-check"></i>
                 </div>
-                <div className="card-body">
-                  <h6 style={{ fontWeight: "bold" }}>{task?.title}</h6>
-                  <p className="card-text">{task?.description}</p>
-                  <h6>Date : {task?.createdAt.substring(0, 10)}</h6>
-                </div>
+                <h3>No tasks found</h3>
+                <p>
+                  {todoStatus === "all"
+                    ? "You haven't created any tasks yet."
+                    : `There are currently no ${todoStatus} tasks.`}
+                </p>
               </div>
-            </>
-          ))
+            ) : (
+              filterdTask.map((task) => {
+                const formattedDate = task?.createdAt
+                  ? new Date(task.createdAt).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric"
+                    })
+                  : "Recently";
+
+                return (
+                  <div className="task-card" key={task._id}>
+                    <div className="task-card-header">
+                      <span
+                        className={`status-badge ${
+                          task?.isCompleted ? "badge-completed" : "badge-incomplete"
+                        }`}
+                      >
+                        <i
+                          className={`fa-solid ${
+                            task?.isCompleted ? "fa-circle-check" : "fa-clock"
+                          }`}
+                        ></i>
+                        {task?.isCompleted ? "Completed" : "Incomplete"}
+                      </span>
+                      <span className="task-date">
+                        <i className="fa-regular fa-calendar"></i> {formattedDate}
+                      </span>
+                    </div>
+
+                    <div className="task-card-body">
+                      <h4 className="task-title">{task?.title}</h4>
+                      <p className="task-desc">
+                        {task?.description || "No description provided."}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         )}
-      </div>
-    </>
+      </main>
+    </div>
   );
 };
 
-export default TodoList
+export default TodoList;
